@@ -44,10 +44,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
         
         sceneView.delegate = self
+        sceneView.automaticallyUpdatesLighting = false
         
         let tap = UITapGestureRecognizer()
         tap.addTarget(self, action: #selector(didTap))
         sceneView.addGestureRecognizer(tap)
+    }
+    
+    // this func from Apple ARKit placing objects demo
+    func enableEnvironmentMapWithIntensity(_ intensity: CGFloat) {
+        if sceneView.scene.lightingEnvironment.contents == nil {
+            if let environmentMap = UIImage(named: "Media.scnassets/environment_blur.exr") {
+                sceneView.scene.lightingEnvironment.contents = environmentMap
+            }
+        }
+        sceneView.scene.lightingEnvironment.intensity = intensity
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,59 +105,88 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let wallNode = SCNNode()
         wallNode.position = newPlaneData.1
         
-        // back
-        for i in 0..<3 {
-            let z:Float = Float(Nodes.WALL_LENGTH) * Float(i)
-            let y:Float = Float(Nodes.WALL_HEIGHT) * Float(0.5)
-            let x1:Float = 0
-            let x2:Float = Float(Nodes.WALL_WIDTH)
-            
-            let maskingWallSegmentNode = Nodes.maskingWallSegmentNode()
-            maskingWallSegmentNode.position = SCNVector3(x1, y, z)
-            wallNode.addChildNode(maskingWallSegmentNode)
-            
-            let wallSegmentNode = Nodes.wallSegmentNode()
-            wallSegmentNode.position = SCNVector3(x2, y, z)
-            wallNode.addChildNode(wallSegmentNode)
-        }
+        let endWallSegmentNode = Nodes.wall(pieces: 3, maskXUpperSide: true)
+        endWallSegmentNode.eulerAngles = SCNVector3(0, 90.0.degreesToRadians, 0)
+        endWallSegmentNode.position = SCNVector3(0, 0, Float(Nodes.WALL_LENGTH) * -1.5)
+        wallNode.addChildNode(endWallSegmentNode)
         
-        // sides
-        for i in 0..<3 {
-            let x:Float = Float(Nodes.WALL_LENGTH) * Float(i)
-            let y:Float = Float(Nodes.WALL_HEIGHT) * Float(0.5)
-            let z1:Float = 0
-            let z2:Float = Float(Nodes.WALL_WIDTH)
-            let z3:Float = Float(Nodes.WALL_LENGTH) * Float(3)
-            let z4:Float = Float(Nodes.WALL_LENGTH) * Float(3) + Float(Nodes.WALL_WIDTH)
-            
-            let maskingWallSegmentNode = Nodes.maskingWallSegmentNode()
-            maskingWallSegmentNode.eulerAngles = SCNVector3(0, 90.0.degreesToRadians, 0)
-            maskingWallSegmentNode.position = SCNVector3(x, y, z1)
-            wallNode.addChildNode(maskingWallSegmentNode)
-            
-            let wallSegmentNode = Nodes.wallSegmentNode()
-            wallSegmentNode.eulerAngles = SCNVector3(0, 90.0.degreesToRadians, 0)
-            wallSegmentNode.position = SCNVector3(x, y, z2)
-            wallNode.addChildNode(wallSegmentNode)
-            
-            let maskingWallSegmentNode2 = Nodes.maskingWallSegmentNode()
-            maskingWallSegmentNode2.eulerAngles = SCNVector3(0, -90.0.degreesToRadians, 0)
-            maskingWallSegmentNode2.position = SCNVector3(x, y, z3)
-            wallNode.addChildNode(maskingWallSegmentNode2)
-            
-            let wallSegmentNode2 = Nodes.wallSegmentNode()
-            wallSegmentNode2.eulerAngles = SCNVector3(0, -90.0.degreesToRadians, 0)
-            wallSegmentNode2.position = SCNVector3(x, y, z4)
-            wallNode.addChildNode(wallSegmentNode2)
-        }
+        let sideAWallSegmentNode = Nodes.wall(pieces: 3, maskXUpperSide: true)
+        sideAWallSegmentNode.eulerAngles = SCNVector3(0, 180.0.degreesToRadians, 0)
+        sideAWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * -1.5, 0, 0)
+        wallNode.addChildNode(sideAWallSegmentNode)
+        
+        let sideBWallSegmentNode = Nodes.wall(pieces: 3, maskXUpperSide: true)
+        sideBWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * 1.5, 0, 0)
+        wallNode.addChildNode(sideBWallSegmentNode)
+        
+        let leftDoorSideNode = Nodes.wallSegmentNode(withMask: true)
+        leftDoorSideNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
+        leftDoorSideNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * -1.5 + Float(Nodes.WALL_LENGTH) * 0.5,
+                                                 Float(Nodes.WALL_HEIGHT) * Float(0.5),
+                                                 Float(Nodes.WALL_LENGTH) * 1.5)
+        wallNode.addChildNode(leftDoorSideNode)
+        
+        let rightDoorSideNode = Nodes.wallSegmentNode(withMask: true)
+        rightDoorSideNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
+        rightDoorSideNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * 1.5 - Float(Nodes.WALL_LENGTH) * 0.5,
+                                                Float(Nodes.WALL_HEIGHT) * Float(0.5),
+                                                Float(Nodes.WALL_LENGTH) * 1.5)
+        wallNode.addChildNode(rightDoorSideNode)
+        
+        let floorNode = Nodes.plane(pieces: 3,
+                                    maskYUpperSide: false)
+        floorNode.position = SCNVector3(0, 0, 0)
+        wallNode.addChildNode(floorNode)
+        
+        let roofNode = Nodes.plane(pieces: 3,
+                                   maskYUpperSide: true)
+        roofNode.position = SCNVector3(0, Float(Nodes.WALL_HEIGHT), 0)
+        wallNode.addChildNode(roofNode)
         
         sceneView.scene.rootNode.addChildNode(wallNode)
+        
+        let light = SCNLight()
+        light.type = .omni
+        light.zNear = 0.00001
+        light.zFar = 5
+        light.castsShadow = true
+        light.shadowRadius = 200
+        light.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
+        light.shadowMode = .deferred
+        //let constraint = SCNLookAtConstraint(target: wallNode)
+        let lightNode = SCNNode()
+        lightNode.light = light
+        lightNode.position = SCNVector3(0, 1.8, 0)
+        //lightNode.constraints = [constraint]
+        sceneView.scene.rootNode.addChildNode(lightNode)
+        
+        // we would like shadows from inside the portal room to shine onto the floor of the camera image(!)
+        let floor = SCNFloor()
+        floor.reflectivity = 0
+        floor.firstMaterial?.diffuse.contents = UIColor.white
+        floor.firstMaterial?.colorBufferWriteMask = SCNColorMask(rawValue: 0)
+        let floorShadowNode = SCNNode(geometry:floor)
+        floorShadowNode.position = newPlaneData.1
+        sceneView.scene.rootNode.addChildNode(floorShadowNode)
+        
     }
     
     /// MARK: - ARSCNViewDelegate
     
+    // this func from Apple ARKit placing objects demo
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        
+        // from apples app
+        DispatchQueue.main.async {
+            // If light estimation is enabled, update the intensity of the model's lights and the environment map
+            if let lightEstimate = self.sceneView.session.currentFrame?.lightEstimate {
+                
+                // Apple divived the ambientIntensity by 40, I find that, atleast with the materials used
+                // here that it's a big too bright, so I increased to to 50..
+                self.enableEnvironmentMapWithIntensity(lightEstimate.ambientIntensity / 50)
+            } else {
+                self.enableEnvironmentMapWithIntensity(25)
+            }
+        }
     }
     
     // did at plane(?)
