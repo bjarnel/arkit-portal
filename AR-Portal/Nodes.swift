@@ -14,20 +14,8 @@ final class Nodes {
     static let WALL_HEIGHT:CGFloat = 2.2
     static let WALL_LENGTH:CGFloat = 0.3
     
-    class func maskingWallSegmentNode() -> SCNNode {
-        let wallSegment = SCNBox(width: Nodes.WALL_WIDTH,
-                                 height: Nodes.WALL_HEIGHT,
-                                 length: Nodes.WALL_LENGTH,
-                                 chamferRadius: 0)
-        wallSegment.firstMaterial?.diffuse.contents = UIColor.red
-        wallSegment.firstMaterial?.transparency = 0.000001
-        wallSegment.firstMaterial?.writesToDepthBuffer = true
-        
-        let node = SCNNode(geometry: wallSegment)
-        node.renderingOrder = 100   //everything inside the portal area must have higher rendering order...
-        
-        return node
-    }
+    static let DOOR_WIDTH:CGFloat = 0.8
+    static let DOOR_HEIGHT:CGFloat = 1.5
     
     class func plane(pieces:Int, maskYUpperSide:Bool = true) -> SCNNode {
         let maskSegment = SCNBox(width: Nodes.WALL_LENGTH * CGFloat(pieces),
@@ -63,52 +51,44 @@ final class Nodes {
         return node
     }
     
-    class func wall(pieces:Int, maskXUpperSide:Bool = true) -> SCNNode {
+    class func wallSegmentNode(length:CGFloat = Nodes.WALL_LENGTH,
+                               height:CGFloat = Nodes.WALL_HEIGHT,
+                               maskXUpperSide:Bool = true) -> SCNNode {
         let node = SCNNode()
         
-        for i in 0..<pieces {
-            let segment = self.wallSegmentNode(withMask: true, maskXUpperSide: maskXUpperSide)
-            segment.position = SCNVector3(0,
-                                          Float(Nodes.WALL_HEIGHT) * 0.5,
-                                          0 - (Float(Nodes.WALL_LENGTH) * Float(pieces) * 0.5)
-                                            + Float(i) * Float(Nodes.WALL_LENGTH)
-                                            + Float(Nodes.WALL_LENGTH) * 0.5)
-            node.addChildNode(segment)
-        }
+        let wallSegment = SCNBox(width: Nodes.WALL_WIDTH,
+                                 height: height,
+                                 length: length,
+                                 chamferRadius: 0)
+        wallSegment.firstMaterial?.diffuse.contents = UIImage(named: "Media.scnassets/slipperystonework-albedo.png")
+        wallSegment.firstMaterial?.ambientOcclusion.contents = UIImage(named: "Media.scnassets/slipperystonework-ao.png")
+        wallSegment.firstMaterial?.metalness.contents = UIImage(named: "Media.scnassets/slipperystonework-metalness.png")
+        wallSegment.firstMaterial?.normal.contents = UIImage(named: "Media.scnassets/slipperystonework-normal.png")
+        wallSegment.firstMaterial?.roughness.contents = UIImage(named: "Media.scnassets/slipperystonework-rough.png")
+        
+        wallSegment.firstMaterial?.writesToDepthBuffer = true
+        wallSegment.firstMaterial?.readsFromDepthBuffer = true
+        
+        let wallSegmentNode = SCNNode(geometry: wallSegment)
+        wallSegmentNode.renderingOrder = 200
+        
+        node.addChildNode(wallSegmentNode)
+        
+        let maskingWallSegment = SCNBox(width: Nodes.WALL_WIDTH,
+                                 height: height,
+                                 length: length,
+                                 chamferRadius: 0)
+        maskingWallSegment.firstMaterial?.diffuse.contents = UIColor.red
+        maskingWallSegment.firstMaterial?.transparency = 0.000001
+        maskingWallSegment.firstMaterial?.writesToDepthBuffer = true
+        
+        let maskingWallSegmentNode = SCNNode(geometry: maskingWallSegment)
+        maskingWallSegmentNode.renderingOrder = 100   //everything inside the portal area must have higher rendering order...
+        
+        
+        maskingWallSegmentNode.position = SCNVector3(maskXUpperSide ? Nodes.WALL_WIDTH : -Nodes.WALL_WIDTH,0,0)
+        node.addChildNode(maskingWallSegmentNode)
         
         return node
-    }
-    
-    class func wallSegmentNode(withMask:Bool = true, maskXUpperSide:Bool = true) -> SCNNode {
-        if withMask {
-            let node = SCNNode()
-            let wallSegmentNode = self.wallSegmentNode(withMask: false)
-            node.addChildNode(wallSegmentNode)
-            
-            let maskingWallSegmentNode = self.maskingWallSegmentNode()
-            maskingWallSegmentNode.position = SCNVector3(maskXUpperSide ? Nodes.WALL_WIDTH : -Nodes.WALL_WIDTH,0,0)
-            node.addChildNode(maskingWallSegmentNode)
-            
-            return node
-            
-        } else {
-            let wallSegment = SCNBox(width: Nodes.WALL_WIDTH,
-                                     height: Nodes.WALL_HEIGHT,
-                                     length: Nodes.WALL_LENGTH,
-                                     chamferRadius: 0)
-            wallSegment.firstMaterial?.diffuse.contents = UIImage(named: "Media.scnassets/slipperystonework-albedo.png")
-            wallSegment.firstMaterial?.ambientOcclusion.contents = UIImage(named: "Media.scnassets/slipperystonework-ao.png")
-            wallSegment.firstMaterial?.metalness.contents = UIImage(named: "Media.scnassets/slipperystonework-metalness.png")
-            wallSegment.firstMaterial?.normal.contents = UIImage(named: "Media.scnassets/slipperystonework-normal.png")
-            wallSegment.firstMaterial?.roughness.contents = UIImage(named: "Media.scnassets/slipperystonework-rough.png")
-            
-            wallSegment.firstMaterial?.writesToDepthBuffer = true
-            wallSegment.firstMaterial?.readsFromDepthBuffer = true
-            
-            let node = SCNNode(geometry: wallSegment)
-            node.renderingOrder = 200
-        
-            return node
-        }
     }
 }

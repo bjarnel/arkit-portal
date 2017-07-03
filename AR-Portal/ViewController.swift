@@ -105,30 +105,40 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let wallNode = SCNNode()
         wallNode.position = newPlaneData.1
         
-        let endWallSegmentNode = Nodes.wall(pieces: 3, maskXUpperSide: true)
+        let sideLength = Nodes.WALL_LENGTH * 3
+        let halfSideLength = sideLength * 0.5
+        
+        let endWallSegmentNode = Nodes.wallSegmentNode(length: sideLength,
+                                                       maskXUpperSide: true)
         endWallSegmentNode.eulerAngles = SCNVector3(0, 90.0.degreesToRadians, 0)
-        endWallSegmentNode.position = SCNVector3(0, 0, Float(Nodes.WALL_LENGTH) * -1.5)
+        endWallSegmentNode.position = SCNVector3(0, Float(Nodes.WALL_HEIGHT * 0.5), Float(Nodes.WALL_LENGTH) * -1.5)
         wallNode.addChildNode(endWallSegmentNode)
         
-        let sideAWallSegmentNode = Nodes.wall(pieces: 3, maskXUpperSide: true)
+        let sideAWallSegmentNode = Nodes.wallSegmentNode(length: sideLength,
+                                                       maskXUpperSide: true)
         sideAWallSegmentNode.eulerAngles = SCNVector3(0, 180.0.degreesToRadians, 0)
-        sideAWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * -1.5, 0, 0)
+        sideAWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * -1.5, Float(Nodes.WALL_HEIGHT * 0.5), 0)
         wallNode.addChildNode(sideAWallSegmentNode)
         
-        let sideBWallSegmentNode = Nodes.wall(pieces: 3, maskXUpperSide: true)
-        sideBWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * 1.5, 0, 0)
+        let sideBWallSegmentNode = Nodes.wallSegmentNode(length: sideLength,
+                                                         maskXUpperSide: true)
+        sideBWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * 1.5, Float(Nodes.WALL_HEIGHT * 0.5), 0)
         wallNode.addChildNode(sideBWallSegmentNode)
         
-        let leftDoorSideNode = Nodes.wallSegmentNode(withMask: true)
+        let doorSideLength = (sideLength - Nodes.DOOR_WIDTH) * 0.5
+        
+        let leftDoorSideNode = Nodes.wallSegmentNode(length: doorSideLength,
+                                                     maskXUpperSide: true)
         leftDoorSideNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
-        leftDoorSideNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * -1.5 + Float(Nodes.WALL_LENGTH) * 0.5,
-                                                 Float(Nodes.WALL_HEIGHT) * Float(0.5),
-                                                 Float(Nodes.WALL_LENGTH) * 1.5)
+        leftDoorSideNode.position = SCNVector3(Float(-halfSideLength + 0.5 * doorSideLength),
+                                               Float(Nodes.WALL_HEIGHT) * Float(0.5),
+                                               Float(Nodes.WALL_LENGTH) * 1.5)
         wallNode.addChildNode(leftDoorSideNode)
         
-        let rightDoorSideNode = Nodes.wallSegmentNode(withMask: true)
+        let rightDoorSideNode = Nodes.wallSegmentNode(length: doorSideLength,
+                                                     maskXUpperSide: true)
         rightDoorSideNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
-        rightDoorSideNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * 1.5 - Float(Nodes.WALL_LENGTH) * 0.5,
+        rightDoorSideNode.position = SCNVector3(Float(halfSideLength - 0.5 * doorSideLength),
                                                 Float(Nodes.WALL_HEIGHT) * Float(0.5),
                                                 Float(Nodes.WALL_LENGTH) * 1.5)
         wallNode.addChildNode(rightDoorSideNode)
@@ -146,6 +156,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(wallNode)
         
         let light = SCNLight()
+        // [SceneKit] Error: shadows are only supported by spot lights and directional lights
         light.type = .omni
         light.zNear = 0.00001
         light.zFar = 5

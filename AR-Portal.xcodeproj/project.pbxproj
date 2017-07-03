@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06391F401F0A2FA2000CBEAA /* ReplayKitRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06391F3F1F0A2FA2000CBEAA /* ReplayKitRecording.swift */; };
 		709C7D191F09498C002B9025 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709C7D181F09498C002B9025 /* AppDelegate.swift */; };
 		709C7D1B1F09498C002B9025 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709C7D1A1F09498C002B9025 /* ViewController.swift */; };
 		709C7D1E1F09498C002B9025 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 709C7D1C1F09498C002B9025 /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		06391F3F1F0A2FA2000CBEAA /* ReplayKitRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayKitRecording.swift; sourceTree = "<group>"; };
 		709C7D151F09498C002B9025 /* AR-Portal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-Portal.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		709C7D181F09498C002B9025 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		709C7D1A1F09498C002B9025 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 				709C7D2A1F094BAE002B9025 /* Extensions.swift */,
 				709C7D2F1F094C5B002B9025 /* Nodes.swift */,
 				709C7D321F09619E002B9025 /* Media.scnassets */,
+				06391F3F1F0A2FA2000CBEAA /* ReplayKitRecording.swift */,
 			);
 			path = "AR-Portal";
 			sourceTree = "<group>";
@@ -145,6 +148,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06391F401F0A2FA2000CBEAA /* ReplayKitRecording.swift in Sources */,
 				709C7D1B1F09498C002B9025 /* ViewController.swift in Sources */,
 				709C7D2B1F094BAE002B9025 /* Extensions.swift in Sources */,
 				709C7D191F09498C002B9025 /* AppDelegate.swift in Sources */,
@@ -324,6 +328,7 @@
 				709C7D291F09498D002B9025 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
