@@ -53,6 +53,7 @@ final class Nodes {
     
     class func wallSegmentNode(length:CGFloat = Nodes.WALL_LENGTH,
                                height:CGFloat = Nodes.WALL_HEIGHT,
+                               maskOutsets:CGFloat = 0.002,
                                maskXUpperSide:Bool = true) -> SCNNode {
         let node = SCNNode()
         
@@ -76,7 +77,7 @@ final class Nodes {
         
         let maskingWallSegment = SCNBox(width: Nodes.WALL_WIDTH,
                                  height: height,
-                                 length: length,
+                                 length: length + maskOutsets * 2,
                                  chamferRadius: 0)
         maskingWallSegment.firstMaterial?.diffuse.contents = UIColor.red
         maskingWallSegment.firstMaterial?.transparency = 0.000001
@@ -86,7 +87,7 @@ final class Nodes {
         maskingWallSegmentNode.renderingOrder = 100   //everything inside the portal area must have higher rendering order...
         
         
-        maskingWallSegmentNode.position = SCNVector3(maskXUpperSide ? Nodes.WALL_WIDTH : -Nodes.WALL_WIDTH,0,0)
+        maskingWallSegmentNode.position = SCNVector3(maskXUpperSide ? Nodes.WALL_WIDTH + maskOutsets : -(Nodes.WALL_WIDTH + maskOutsets),0,0)
         node.addChildNode(maskingWallSegmentNode)
         
         return node

@@ -180,7 +180,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         light.spotInnerAngle = 70
         light.spotOuterAngle = 120
         light.zNear = 0.00001
-        light.zFar = 5
+        light.zFar = 20
         light.castsShadow = true
         light.shadowRadius = 200
         light.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
@@ -191,7 +191,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         lightNode.light = light
         lightNode.position = SCNVector3(newPlaneData.1.x,
                                         newPlaneData.1.y + Float(Nodes.DOOR_HEIGHT),
-                                        newPlaneData.1.z - Float(Nodes.WALL_LENGTH))
+                                        newPlaneData.1.z - Float(Nodes.WALL_LENGTH) * 1.45)
         lightNode.constraints = [constraint]
         sceneView.scene.rootNode.addChildNode(lightNode)
         
