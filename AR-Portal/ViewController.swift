@@ -143,6 +143,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                                                 Float(Nodes.WALL_LENGTH) * 1.5)
         wallNode.addChildNode(rightDoorSideNode)
         
+        let aboveDoorNode = Nodes.wallSegmentNode(length: Nodes.DOOR_WIDTH,
+                                                  height: Nodes.WALL_HEIGHT - Nodes.DOOR_HEIGHT)
+        aboveDoorNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
+        aboveDoorNode.position = SCNVector3(0,
+                                            Float(Nodes.WALL_HEIGHT) - Float(Nodes.WALL_HEIGHT - Nodes.DOOR_HEIGHT) * 0.5,
+                                            Float(Nodes.WALL_LENGTH) * 1.5)
+        wallNode.addChildNode(aboveDoorNode)
+        
         let floorNode = Nodes.plane(pieces: 3,
                                     maskYUpperSide: false)
         floorNode.position = SCNVector3(0, 0, 0)
@@ -155,21 +163,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         sceneView.scene.rootNode.addChildNode(wallNode)
         
-        let light = SCNLight()
-        // [SceneKit] Error: shadows are only supported by spot lights and directional lights
-        light.type = .omni
-        light.zNear = 0.00001
-        light.zFar = 5
-        light.castsShadow = true
-        light.shadowRadius = 200
-        light.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
-        light.shadowMode = .deferred
-        //let constraint = SCNLookAtConstraint(target: wallNode)
-        let lightNode = SCNNode()
-        lightNode.light = light
-        lightNode.position = SCNVector3(0, 1.8, 0)
-        //lightNode.constraints = [constraint]
-        sceneView.scene.rootNode.addChildNode(lightNode)
         
         // we would like shadows from inside the portal room to shine onto the floor of the camera image(!)
         let floor = SCNFloor()
@@ -179,6 +172,30 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let floorShadowNode = SCNNode(geometry:floor)
         floorShadowNode.position = newPlaneData.1
         sceneView.scene.rootNode.addChildNode(floorShadowNode)
+        
+        
+        let light = SCNLight()
+        // [SceneKit] Error: shadows are only supported by spot lights and directional lights
+        light.type = .spot
+        light.spotInnerAngle = 70
+        light.spotOuterAngle = 120
+        light.zNear = 0.00001
+        light.zFar = 5
+        light.castsShadow = true
+        light.shadowRadius = 200
+        light.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
+        light.shadowMode = .deferred
+        let constraint = SCNLookAtConstraint(target: floorShadowNode)
+        constraint.isGimbalLockEnabled = true
+        let lightNode = SCNNode()
+        lightNode.light = light
+        lightNode.position = SCNVector3(newPlaneData.1.x,
+                                        newPlaneData.1.y + Float(Nodes.DOOR_HEIGHT),
+                                        newPlaneData.1.z - Float(Nodes.WALL_LENGTH))
+        lightNode.constraints = [constraint]
+        sceneView.scene.rootNode.addChildNode(lightNode)
+        
+        
         
     }
     
