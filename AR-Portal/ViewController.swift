@@ -44,7 +44,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
         
         sceneView.delegate = self
-        sceneView.automaticallyUpdatesLighting = false
+      //  sceneView.automaticallyUpdatesLighting = false
         
         let tap = UITapGestureRecognizer()
         tap.addTarget(self, action: #selector(didTap))
@@ -105,24 +105,25 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let wallNode = SCNNode()
         wallNode.position = newPlaneData.1
         
-        let sideLength = Nodes.WALL_LENGTH * 3
+        let size = 10
+        let sideLength = Nodes.WALL_LENGTH * CGFloat(size)
         let halfSideLength = sideLength * 0.5
         
         let endWallSegmentNode = Nodes.wallSegmentNode(length: sideLength,
                                                        maskXUpperSide: true)
         endWallSegmentNode.eulerAngles = SCNVector3(0, 90.0.degreesToRadians, 0)
-        endWallSegmentNode.position = SCNVector3(0, Float(Nodes.WALL_HEIGHT * 0.5), Float(Nodes.WALL_LENGTH) * -1.5)
+        endWallSegmentNode.position = SCNVector3(0, Float(Nodes.WALL_HEIGHT * 0.5), -Float(halfSideLength))
         wallNode.addChildNode(endWallSegmentNode)
         
         let sideAWallSegmentNode = Nodes.wallSegmentNode(length: sideLength,
                                                        maskXUpperSide: true)
         sideAWallSegmentNode.eulerAngles = SCNVector3(0, 180.0.degreesToRadians, 0)
-        sideAWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * -1.5, Float(Nodes.WALL_HEIGHT * 0.5), 0)
+        sideAWallSegmentNode.position = SCNVector3(-Float(halfSideLength), Float(Nodes.WALL_HEIGHT * 0.5), 0)
         wallNode.addChildNode(sideAWallSegmentNode)
         
         let sideBWallSegmentNode = Nodes.wallSegmentNode(length: sideLength,
                                                          maskXUpperSide: true)
-        sideBWallSegmentNode.position = SCNVector3(Float(Nodes.WALL_LENGTH) * 1.5, Float(Nodes.WALL_HEIGHT * 0.5), 0)
+        sideBWallSegmentNode.position = SCNVector3(Float(halfSideLength), Float(Nodes.WALL_HEIGHT * 0.5), 0)
         wallNode.addChildNode(sideBWallSegmentNode)
         
         let doorSideLength = (sideLength - Nodes.DOOR_WIDTH) * 0.5
@@ -132,7 +133,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         leftDoorSideNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
         leftDoorSideNode.position = SCNVector3(Float(-halfSideLength + 0.5 * doorSideLength),
                                                Float(Nodes.WALL_HEIGHT) * Float(0.5),
-                                               Float(Nodes.WALL_LENGTH) * 1.5)
+                                               Float(halfSideLength))
         wallNode.addChildNode(leftDoorSideNode)
         
         let rightDoorSideNode = Nodes.wallSegmentNode(length: doorSideLength,
@@ -140,7 +141,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         rightDoorSideNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
         rightDoorSideNode.position = SCNVector3(Float(halfSideLength - 0.5 * doorSideLength),
                                                 Float(Nodes.WALL_HEIGHT) * Float(0.5),
-                                                Float(Nodes.WALL_LENGTH) * 1.5)
+                                                Float(halfSideLength))
         wallNode.addChildNode(rightDoorSideNode)
         
         let aboveDoorNode = Nodes.wallSegmentNode(length: Nodes.DOOR_WIDTH,
@@ -148,19 +149,23 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         aboveDoorNode.eulerAngles = SCNVector3(0, 270.0.degreesToRadians, 0)
         aboveDoorNode.position = SCNVector3(0,
                                             Float(Nodes.WALL_HEIGHT) - Float(Nodes.WALL_HEIGHT - Nodes.DOOR_HEIGHT) * 0.5,
-                                            Float(Nodes.WALL_LENGTH) * 1.5)
+                                            Float(halfSideLength))
         wallNode.addChildNode(aboveDoorNode)
         
-        let floorNode = Nodes.plane(pieces: 3,
+        let floorNode = Nodes.plane(pieces: size,
                                     maskYUpperSide: false)
         floorNode.position = SCNVector3(0, 0, 0)
         wallNode.addChildNode(floorNode)
         
-        let roofNode = Nodes.plane(pieces: 3,
+        let roofNode = Nodes.plane(pieces: size,
                                    maskYUpperSide: true)
         roofNode.position = SCNVector3(0, Float(Nodes.WALL_HEIGHT), 0)
         wallNode.addChildNode(roofNode)
         
+        let horizonNode = Nodes.horizonNode(radius: halfSideLength)
+        horizonNode.position = SCNVector3(0,0,halfSideLength)
+        wallNode.addChildNode(horizonNode)
+ 
         sceneView.scene.rootNode.addChildNode(wallNode)
         
         
@@ -172,7 +177,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let floorShadowNode = SCNNode(geometry:floor)
         floorShadowNode.position = newPlaneData.1
         sceneView.scene.rootNode.addChildNode(floorShadowNode)
-        
+        /*
         
         let light = SCNLight()
         // [SceneKit] Error: shadows are only supported by spot lights and directional lights
@@ -183,7 +188,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         light.zFar = 20
         light.castsShadow = true
         light.shadowRadius = 200
-        light.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
+        //light.color = UIColor(red: 1, green: 0, blue: 0, alpha: 1)
+        light.shadowColor = UIColor(red: 0.0, green: 0, blue: 0, alpha: 0.3)
         light.shadowMode = .deferred
         let constraint = SCNLookAtConstraint(target: floorShadowNode)
         constraint.isGimbalLockEnabled = true
@@ -196,11 +202,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(lightNode)
         
         
-        
+        */
     }
     
     /// MARK: - ARSCNViewDelegate
-    
+    /*
     // this func from Apple ARKit placing objects demo
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         // from apples app
@@ -216,7 +222,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
-    
+    */
     // did at plane(?)
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         planeCount += 1
