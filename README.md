@@ -8,4 +8,4 @@ The slipperystonework texture is from freepbr.com
 The environment.jpg/environment_blur.exr is from Apple demo
 
 ## Author
-Bjarne Lundgren / bjarne@sent.com / @bjarnel
+Bjarne Lundgren / bjarne@sent.com / [@bjarnel](https://twitter.com/bjarnel)
