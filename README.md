@@ -3,6 +3,8 @@ Simple portal demo implemented with ARKit+SceneKit, the trick is to change the r
 
 Licensed under the Apache License, Version 2.0
 
+You can use this code anyway you like, but please provide attribution.
+
 The slipperystonework texture is from freepbr.com
 
 The environment.jpg/environment_blur.exr is from Apple demo
